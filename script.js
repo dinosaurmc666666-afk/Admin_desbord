@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, set, get, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+// ✅ Firebase Config របស់អ្នក
 const firebaseConfig = {
     apiKey: "AIzaSyC42F7V4_h1VmAtAWuoFL8TxW-b3ym-524",
     authDomain: "ahnajakcode.firebaseapp.com",
@@ -14,55 +15,40 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-console.log('✅ Firebase initialized - Real-time sync enabled!');
-
 let editingProductId = null;
 
-// ========== LOGIN ==========
+// ========== LOGIN & LOGOUT ==========
 window.login = function() {
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    
-    if (username === 'admin' && password === '123456') {
+    const u = document.getElementById('username').value;
+    const p = document.getElementById('password').value;
+    if(u === 'admin' && p === '123456') {
         document.getElementById('loginPage').style.display = 'none';
         document.getElementById('dashboard').style.display = 'block';
         loadAllData();
-        listenForChanges();
-        console.log('✅ Admin logged in - Real-time sync active!');
+        listenForChanges(); // ✅ ចាប់ផតើមស្តាប់ការផ្លាស់ប្តូរពី User
     } else {
-        alert('Invalid credentials! Use: admin / 123456');
+        alert('Invalid credentials!');
     }
 }
 
 window.logout = function() {
-    document.getElementById('loginPage').style.display = 'flex';
-    document.getElementById('dashboard').style.display = 'none';
+    location.reload();
 }
 
-// ========== REAL-TIME LISTENERS ==========
+// ========== REAL-TIME SYNC (សំខាន់!) ==========
 function listenForChanges() {
-    console.log('🔄 Listening for real-time changes across all users...');
+    console.log("🔄 Listening for changes from User Dashboard...");
     
-    const productsRef = ref(database, 'products');
-    onValue(productsRef, (snapshot) => {
-        const data = snapshot.val();
-        console.log('📦 Products updated in Firebase - Syncing to all users...', data);
+    // ស្តាប់ Products (ពេល User ទិញ Stock នឹងថយ)
+    onValue(ref(database, 'products'), (snap) => {
         loadProductsTable();
         loadStats();
     });
-    
-    const ordersRef = ref(database, 'orders');
-    onValue(ordersRef, (snapshot) => {
-        const data = snapshot.val();
-        console.log('🛒 Orders updated in Firebase...', data);
+
+    // ស្ាប់ Orders (ពេល User Checkout Order នឹងចូលមក)
+    onValue(ref(database, 'orders'), (snap) => {
         loadOrdersTable();
         loadStats();
-    });
-    
-    const usersRef = ref(database, 'users');
-    onValue(usersRef, (snapshot) => {
-        console.log('👥 Users updated in Firebase');
-        loadUsersTable();
     });
 }
 
@@ -72,52 +58,44 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById(btn.dataset.section + 'Section').classList.add('active');
         });
     });
 });
 
-// ========== PRODUCTS ==========
+// ========== PRODUCTS FUNCTIONS ==========
 function loadProductsTable() {
-    const productsRef = ref(database, 'products');
-    get(productsRef).then((snapshot) => {
-        const products = snapshot.val() || {};
-        const productsArray = Object.entries(products).map(([id, data]) => ({
-            id: id,
-            ...data
-        }));
-        
+    get(ref(database, 'products')).then(snap => {
+        const data = snap.val() || {};
+        const arr = Object.entries(data).map(([id, val]) => ({id, ...val}));
         const tbody = document.getElementById('productsTable');
         
-        if (productsArray.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;"><i class="fas fa-inbox"></i> No products yet</td></tr>';
+        if(arr.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">No products found</td></tr>';
             return;
         }
-        
-        tbody.innerHTML = productsArray.map(p => `
+
+        tbody.innerHTML = arr.map(p => `
             <tr>
                 <td>#${p.id}</td>
-                <td><img src="${p.image || 'https://via.placeholder.com/50'}" alt="${p.name}"></td>
+                <td><img src="${p.image || 'https://via.placeholder.com/50'}" width="40"></td>
                 <td>${p.name}</td>
                 <td>$${parseFloat(p.price).toFixed(2)}</td>
                 <td>${p.stock}</td>
                 <td>
-                    <button class="btn btn-warning btn-sm" onclick="editProduct('${p.id}')"><i class="fas fa-edit"></i> Edit</button>
-                    <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}')"><i class="fas fa-trash"></i> Delete</button>
+                    <button class="btn btn-warning btn-sm" onclick="editProduct('${p.id}')"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}')"><i class="fas fa-trash"></i></button>
                 </td>
             </tr>
         `).join('');
-    }).catch((error) => {
-        console.error('Error loading products:', error);
     });
 }
 
+// ✅ ដំណោះស្រាយ Button Add Product (Assign to window)
 window.showAddProductModal = function() {
-    console.log('➕ Opening Add Product modal...');
     editingProductId = null;
-    document.getElementById('modalTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Add New Product';
+    document.getElementById('modalTitle').innerHTML = '<i class="fas fa-plus"></i> Add New Product';
     document.getElementById('productName').value = '';
     document.getElementById('productPrice').value = '';
     document.getElementById('productStock').value = '';
@@ -127,24 +105,18 @@ window.showAddProductModal = function() {
 }
 
 window.editProduct = async function(id) {
-    try {
-        const productRef = ref(database, 'products/' + id);
-        const snapshot = await get(productRef);
-        const product = snapshot.val();
-        
-        if (!product) return;
-        
-        editingProductId = id;
-        document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Product';
-        document.getElementById('productName').value = product.name;
-        document.getElementById('productPrice').value = product.price;
-        document.getElementById('productStock').value = product.stock;
-        document.getElementById('productImage').value = product.image || '';
-        document.getElementById('productDescription').value = product.description || '';
-        document.getElementById('productModal').classList.add('active');
-    } catch (error) {
-        console.error('Error editing product:', error);
-    }
+    const snap = await get(ref(database, 'products/' + id));
+    const p = snap.val();
+    if(!p) return;
+    
+    editingProductId = id;
+    document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Product';
+    document.getElementById('productName').value = p.name;
+    document.getElementById('productPrice').value = p.price;
+    document.getElementById('productStock').value = p.stock;
+    document.getElementById('productImage').value = p.image || '';
+    document.getElementById('productDescription').value = p.description || '';
+    document.getElementById('productModal').classList.add('active');
 }
 
 window.saveProduct = async function() {
@@ -152,51 +124,32 @@ window.saveProduct = async function() {
     const price = parseFloat(document.getElementById('productPrice').value);
     const stock = parseInt(document.getElementById('productStock').value);
     const image = document.getElementById('productImage').value.trim();
-    const description = document.getElementById('productDescription').value.trim();
-    
-    if (!name || isNaN(price) || isNaN(stock)) {
-        alert('Please fill all required fields!');
-        return;
-    }
-    
+    const desc = document.getElementById('productDescription').value.trim();
+
+    if(!name || isNaN(price) || isNaN(stock)) return alert('Please fill required fields!');
+
     try {
-        if (editingProductId) {
-            console.log('✏️ Updating product:', editingProductId);
-            const productRef = ref(database, 'products/' + editingProductId);
-            await update(productRef, { name, price, stock, image, description });
+        if(editingProductId) {
+            await update(ref(database, 'products/' + editingProductId), { name, price, stock, image, description: desc });
         } else {
-            console.log('➕ Adding new product...');
-            const productsRef = ref(database, 'products');
-            const snapshot = await get(productsRef);
-            const products = snapshot.val() || {};
+            const snap = await get(ref(database, 'products'));
+            const current = snap.val() || {};
+            const newId = Object.keys(current).length > 0 ? Math.max(...Object.keys(current).map(k=>parseInt(k))) + 1 : 1;
             
-            const newId = Object.keys(products).length > 0 
-                ? Math.max(...Object.keys(products).map(k => parseInt(k))) + 1 
-                : 1;
-            
-            await set(ref(database, 'products/' + newId), { name, price, stock, image, description });
-            console.log('✅ Product added to Firebase - Syncing to user dashboard...');
+            // ✅ ដាក់ទិន្នន័យចូល Firebase -> User នឹងឃើញភ្ាមៗ
+            await set(ref(database, 'products/' + newId), { name, price, stock, image, description: desc });
         }
-        
         closeModal();
-        alert('✅ Product saved successfully! It will appear on user dashboard immediately.');
-    } catch (error) {
-        console.error('Error saving product:', error);
-        alert('Error saving product. Please try again.');
+        alert('✅ Saved! Check User Dashboard (/products) now.');
+    } catch(e) {
+        console.error(e);
+        alert('Error saving product');
     }
 }
 
 window.deleteProduct = async function(id) {
-    if (!confirm('Are you sure you want to delete this product?')) return;
-    
-    try {
-        console.log('🗑️ Deleting product:', id);
-        const productRef = ref(database, 'products/' + id);
-        await remove(productRef);
-        alert('Product deleted!');
-    } catch (error) {
-        console.error('Error deleting product:', error);
-        alert('Error deleting product. Please try again.');
+    if(confirm('Delete this product?')) {
+        await remove(ref(database, 'products/' + id));
     }
 }
 
@@ -204,24 +157,19 @@ window.closeModal = function() {
     document.getElementById('productModal').classList.remove('active');
 }
 
-// ========== ORDERS ==========
+// ========== ORDERS & STATS ==========
 function loadOrdersTable() {
-    const ordersRef = ref(database, 'orders');
-    get(ordersRef).then((snapshot) => {
-        const orders = snapshot.val() || {};
-        const ordersArray = Object.entries(orders).map(([id, data]) => ({
-            id: id,
-            ...data
-        }));
+    get(ref(database, 'orders')).then(snap => {
+        const data = snap.val() || {};
+        const arr = Object.entries(data).map(([id, val]) => ({id, ...val})).reverse(); // ថ្មីបង្ហាញមុន
         
         const tbody = document.getElementById('ordersTable');
-        
-        if (ordersArray.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;"><i class="fas fa-inbox"></i> No orders yet</td></tr>';
+        if(arr.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center">No orders yet</td></tr>';
             return;
         }
-        
-        tbody.innerHTML = ordersArray.map(o => `
+
+        tbody.innerHTML = arr.map(o => `
             <tr>
                 <td>#${o.id}</td>
                 <td>${o.userName}</td>
@@ -229,104 +177,39 @@ function loadOrdersTable() {
                 <td>${o.quantity}</td>
                 <td>$${parseFloat(o.total).toFixed(2)}</td>
                 <td>${o.date}</td>
-                <td><span class="status status-${o.status.toLowerCase()}">${o.status}</span></td>
+                <td><span class="badge ${o.status}">${o.status}</span></td>
                 <td>
-                    <select onchange="updateOrderStatus('${o.id}', this.value)">
-                        <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                        <option value="Completed" ${o.status === 'Completed' ? 'selected' : ''}>Completed</option>
-                        <option value="Cancelled" ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                    <select onchange="updateStatus('${o.id}', this.value)" class="status-select">
+                        <option value="Pending" ${o.status=='Pending'?'selected':''}>Pending</option>
+                        <option value="Completed" ${o.status=='Completed'?'selected':''}>Completed</option>
+                        <option value="Cancelled" ${o.status=='Cancelled'?'selected':''}>Cancelled</option>
                     </select>
                 </td>
             </tr>
         `).join('');
-    }).catch((error) => {
-        console.error('Error loading orders:', error);
     });
 }
 
-window.updateOrderStatus = async function(id, status) {
-    try {
-        console.log('🔄 Updating order status:', id, 'to', status);
-        const orderRef = ref(database, 'orders/' + id);
-        await update(orderRef, { status });
-    } catch (error) {
-        console.error('Error updating order:', error);
-    }
+window.updateStatus = function(id, status) {
+    update(ref(database, 'orders/' + id), { status });
 }
 
-// ========== USERS ==========
-function loadUsersTable() {
-    const usersRef = ref(database, 'users');
-    get(usersRef).then((snapshot) => {
-        const users = snapshot.val() || {};
-        const usersArray = Object.entries(users).map(([id, data]) => ({
-            id: id,
-            ...data
-        }));
-        
-        const tbody = document.getElementById('usersTable');
-        
-        tbody.innerHTML = usersArray.map(u => `
-            <tr>
-                <td>#${u.id}</td>
-                <td>${u.name}</td>
-                <td>${u.email}</td>
-                <td>${u.registeredDate}</td>
-                <td>${u.ordersCount || 0}</td>
-            </tr>
-        `).join('');
-    }).catch((error) => {
-        console.error('Error loading users:', error);
-    });
-}
-
-// ========== STATS ==========
 function loadStats() {
-    const productsRef = ref(database, 'products');
-    const ordersRef = ref(database, 'orders');
-    
-    Promise.all([
-        get(productsRef),
-        get(ordersRef)
-    ]).then(([productsSnap, ordersSnap]) => {
-        const products = Object.keys(productsSnap.val() || {}).length;
-        const orders = ordersSnap.val() || {};
-        const ordersArray = Object.values(orders);
-        
-        const totalRevenue = ordersArray
-            .filter(o => o.status === 'Completed')
-            .reduce((sum, o) => sum + parseFloat(o.total), 0);
-        
-        const pendingOrders = ordersArray.filter(o => o.status === 'Pending').length;
+    Promise.all([get(ref(database, 'products')), get(ref(database, 'orders'))]).then(([pSnap, oSnap]) => {
+        const products = Object.keys(pSnap.val() || {}).length;
+        const orders = Object.values(oSnap.val() || {});
+        const revenue = orders.filter(o=>o.status==='Completed').reduce((s,o)=>s+parseFloat(o.total),0);
         
         document.getElementById('statsGrid').innerHTML = `
-            <div class="stat-card">
-                <h3><i class="fas fa-box"></i> Total Products</h3>
-                <div class="value">${products}</div>
-            </div>
-            <div class="stat-card">
-                <h3><i class="fas fa-dollar-sign"></i> Total Revenue</h3>
-                <div class="value">$${totalRevenue.toFixed(2)}</div>
-            </div>
-            <div class="stat-card">
-                <h3><i class="fas fa-shopping-cart"></i> Total Orders</h3>
-                <div class="value">${ordersArray.length}</div>
-            </div>
-            <div class="stat-card">
-                <h3><i class="fas fa-clock"></i> Pending Orders</h3>
-                <div class="value">${pendingOrders}</div>
-            </div>
+            <div class="stat-card"><h3><i class="fas fa-box"></i> Products</h3><div class="val">${products}</div></div>
+            <div class="stat-card green"><h3><i class="fas fa-dollar-sign"></i> Revenue</h3><div class="val">$${revenue.toFixed(2)}</div></div>
+            <div class="stat-card blue"><h3><i class="fas fa-shopping-bag"></i> Orders</h3><div class="val">${orders.length}</div></div>
         `;
-    }).catch((error) => {
-        console.error('Error loading stats:', error);
     });
 }
 
 function loadAllData() {
     loadProductsTable();
     loadOrdersTable();
-    loadUsersTable();
     loadStats();
-}
-
-console.log('✅ Admin script loaded with Font Awesome icons!');
+            }
