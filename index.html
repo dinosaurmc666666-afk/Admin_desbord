@@ -13,32 +13,42 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <i class="fas fa-shopping-bag"></i>
+                <i class="fas fa-crown"></i>
                 <span>Admin Panel</span>
             </div>
             <nav class="sidebar-nav">
                 <a href="#" class="nav-item active" data-section="dashboard">
-                    <i class="fas fa-chart-line"></i> Dashboard
+                    <i class="fas fa-home"></i> Dashboard
                 </a>
                 <a href="#" class="nav-item" data-section="products">
-                    <i class="fas fa-box"></i> ទំនិញ
+                    <i class="fas fa-box-open"></i> ទំនិញ
                 </a>
                 <a href="#" class="nav-item" data-section="orders">
-                    <i class="fas fa-shopping-cart"></i> ការបញ្ជាទិញ
+                    <i class="fas fa-shopping-bag"></i> ការបញ្ជាទិញ
                 </a>
                 <a href="#" class="nav-item" data-section="users">
                     <i class="fas fa-users"></i> អ្នកប្រើប្រាស់
                 </a>
             </nav>
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> ចាកចេញ
+                </button>
+            </div>
         </aside>
 
         <!-- Main Content -->
         <main class="admin-main">
             <header class="admin-header">
-                <h1 id="pageTitle">Dashboard</h1>
-                <div class="admin-user">
-                    <i class="fas fa-user-circle"></i>
-                    <span>Admin</span>
+                <div class="header-left">
+                    <h1 id="pageTitle">Dashboard</h1>
+                    <p id="currentDate"></p>
+                </div>
+                <div class="header-right">
+                    <div class="admin-profile">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Administrator</span>
+                    </div>
                 </div>
             </header>
 
@@ -46,33 +56,60 @@
                 <!-- Dashboard Section -->
                 <section id="dashboardSection" class="section active">
                     <div class="stats-grid">
-                        <div class="stat-card">
-                            <i class="fas fa-box"></i>
+                        <div class="stat-card primary">
+                            <div class="stat-icon">
+                                <i class="fas fa-box"></i>
+                            </div>
                             <div class="stat-info">
                                 <h3 id="totalProducts">0</h3>
                                 <p>ទំនិញសរុប</p>
                             </div>
                         </div>
-                        <div class="stat-card">
-                            <i class="fas fa-shopping-cart"></i>
+                        <div class="stat-card success">
+                            <div class="stat-icon">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
                             <div class="stat-info">
                                 <h3 id="totalOrders">0</h3>
                                 <p>ការបញ្ជាទិញ</p>
                             </div>
                         </div>
-                        <div class="stat-card">
-                            <i class="fas fa-users"></i>
+                        <div class="stat-card info">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
                             <div class="stat-info">
                                 <h3 id="totalUsers">0</h3>
-                                <p>អនកប្រើប្ាស់</p>
+                                <p>អ្នកប្រើប្រាស់</p>
                             </div>
                         </div>
-                        <div class="stat-card">
-                            <i class="fas fa-dollar-sign"></i>
+                        <div class="stat-card warning">
+                            <div class="stat-icon">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
                             <div class="stat-info">
                                 <h3 id="totalRevenue">$0</h3>
-                                <p>ចំណូល</p>
+                                <p>ចំណូលសរុប</p>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="recent-section">
+                        <h2><i class="fas fa-clock"></i> ការបញ្ជាទិញថ្មីៗ</h2>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>លេខ Order</th>
+                                        <th>អ្នកបញ្ជាទិញ</th>
+                                        <th>ចំនួន</th>
+                                        <th>សរុប</th>
+                                        <th>ស្ថានភាព</th>
+                                        <th>កាលបរិច្ឆេទ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentOrdersBody"></tbody>
+                            </table>
                         </div>
                     </div>
                 </section>
@@ -80,60 +117,115 @@
                 <!-- Products Section -->
                 <section id="productsSection" class="section">
                     <div class="section-header">
-                        <h2>គ្រប់គ្រងទំនិញ</h2>
+                        <h2><i class="fas fa-box-open"></i> គ្រប់គរងទំនិញ</h2>
                         <button class="btn btn-primary" id="addProductBtn">
-                            <i class="fas fa-plus"></i> បន្ថែមទំនិញ
+                            <i class="fas fa-plus-circle"></i> បន្ថែមទំនិញ
                         </button>
                     </div>
+                    
+                    <div class="filters-bar">
+                        <input type="text" id="productSearch" placeholder="🔍 ស្វែងរកទំនិញ...">
+                        <select id="productSort">
+                            <option value="newest">ថ្មីបំផុត</option>
+                            <option value="price-low">តម្លៃទាប → ខ្ពស់</option>
+                            <option value="price-high">តម្លៃខពស់ → ទាប</option>
+                        </select>
+                    </div>
+
                     <div class="table-container">
                         <table class="data-table">
                             <thead>
                                 <tr>
                                     <th>រូបភាព</th>
-                                    <th>ឈ្មោះ</th>
-                                    <th>តមលៃដើម</th>
-                                    <th>តម្លៃបញ្ុះ</th>
+                                    <th>ឈ្មោះទំនិញ</th>
+                                    <th>តម្លៃដើម</th>
+                                    <th>តម្លៃបញ្ចុះ</th>
+                                    <th>ការពិពណ៌នា</th>
                                     <th>សកម្មភាព</th>
                                 </tr>
                             </thead>
-                            <tbody id="productsTableBody"></tbody>
+                            <tbody id="productsTableBody">
+                                <tr>
+                                    <td colspan="6" class="text-center">កំពុងផ្ទុក...</td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
                 </section>
 
                 <!-- Orders Section -->
                 <section id="ordersSection" class="section">
-                    <h2>ការបញ្ជាទិញ</h2>
+                    <div class="section-header">
+                        <h2><i class="fas fa-shopping-bag"></i> ការបញ្ជាទិញទាំងអស់</h2>
+                        <button class="btn btn-secondary" onclick="loadOrders()">
+                            <i class="fas fa-sync-alt"></i> ធ្វើបច្ចុប្បន្នភាព
+                        </button>
+                    </div>
+
+                    <div class="filters-bar">
+                        <input type="text" id="orderSearch" placeholder="🔍 ស្វែងរក Order...">
+                        <select id="orderStatusFilter">
+                            <option value="all">ស្ថានភាពទាំងអស់</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Processing">Processing</option>
+                            <option value="Shipped">Shipped</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+
                     <div class="table-container">
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>លេខ</th>
-                                    <th>អ្នកបញ្ជាទិញ</th>
-                                    <th>សរុប</th>
+                                    <th>លេខ Order</th>
+                                    <th>User ID</th>
+                                    <th>ចំនួនទំនិញ</th>
+                                    <th>តម្លៃសរុប</th>
                                     <th>ស្ថានភាព</th>
                                     <th>កាលបរិច្ឆេទ</th>
+                                    <th>សកម្មភាព</th>
                                 </tr>
                             </thead>
-                            <tbody id="ordersTableBody"></tbody>
+                            <tbody id="ordersTableBody">
+                                <tr>
+                                    <td colspan="7" class="text-center">កំពុងផ្ទុក...</td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
                 </section>
 
                 <!-- Users Section -->
                 <section id="usersSection" class="section">
-                    <h2>អ្នកប្រើបរាស់</h2>
+                    <div class="section-header">
+                        <h2><i class="fas fa-users"></i> បញ្ជីអ្នកបរើប្រាស់</h2>
+                        <button class="btn btn-secondary" onclick="loadUsers()">
+                            <i class="fas fa-sync-alt"></i> ធ្វើបច្ចុប្បន្ភាព
+                        </button>
+                    </div>
+
+                    <div class="filters-bar">
+                        <input type="text" id="userSearch" placeholder="🔍 ស្វែងរកអ្នកប្រើប្រាស់...">
+                    </div>
+
                     <div class="table-container">
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>ឈ្មោះ</th>
+                                    <th>ID</th>
+                                    <th>ឈ្មោះពេញ</th>
                                     <th>អ៊ីមែល</th>
-                                    <th>ទូរស័ព្ទ</th>
+                                    <th>លេខទូរស័ព្</th>
                                     <th>ភេទ</th>
+                                    <th>ចំនួន Order</th>
                                 </tr>
                             </thead>
-                            <tbody id="usersTableBody"></tbody>
+                            <tbody id="usersTableBody">
+                                <tr>
+                                    <td colspan="6" class="text-center">កំពុងផ្ទុក...</td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
                 </section>
@@ -141,41 +233,68 @@
         </main>
     </div>
 
-    <!-- Add Product Modal -->
+    <!-- Product Modal (Add/Edit) -->
     <div id="productModal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content modal-large">
             <span class="close-btn">&times;</span>
-            <h2>បន្ថែមទំនិញថ្មី</h2>
-            <form id="addProductForm">
-                <div class="form-group">
-                    <label>ឈ្មោះទំនិញ</label>
-                    <input type="text" id="productTitle" required>
+            <h2 id="modalTitle">បន្ថែមទំនិញថ្មី</h2>
+            <form id="productForm">
+                <input type="hidden" id="productId">
+                
+                <div class="form-row">
+                    <div class="form-group full">
+                        <label>ឈ្មោះទំនិញ <span class="required">*</span></label>
+                        <input type="text" id="productTitle" required placeholder="បញ្ចូលឈ្មោះទំនិញ">
+                    </div>
                 </div>
+
                 <div class="form-row">
                     <div class="form-group">
-                        <label>តម្លៃដើម ($)</label>
-                        <input type="number" id="productOriginalPrice" step="0.01" required>
+                        <label>តម្លៃដើម ($) <span class="required">*</span></label>
+                        <input type="number" id="productOriginalPrice" step="0.01" min="0" required placeholder="0.00">
                     </div>
                     <div class="form-group">
-                        <label>តម្លៃបញ្ចុះ ($)</label>
-                        <input type="number" id="productDiscountPrice" step="0.01" required>
+                        <label>តម្លៃបញ្ចុះ ($) <span class="required">*</span></label>
+                        <input type="number" id="productDiscountPrice" step="0.01" min="0" required placeholder="0.00">
                     </div>
                 </div>
+
                 <div class="form-group">
-                    <label>ការពិពណ៌នា</label>
-                    <textarea id="productDescription" rows="4" required></textarea>
+                    <label>ការពិពណ៌នា <span class="required">*</span></label>
+                    <textarea id="productDescription" rows="4" required placeholder="ពិពណ៌នាអំពីទំនិញ..."></textarea>
                 </div>
+
                 <div class="form-group">
-                    <label>រូបភាព</label>
-                    <input type="file" id="productImage" accept="image/*" required>
+                    <label>រូបភាពទំនិញ <span class="required">*</span></label>
+                    <div class="file-upload">
+                        <input type="file" id="productImage" accept="image/*">
+                        <div id="imagePreview" class="image-preview"></div>
+                    </div>
+                    <small>ទំហំរូបភាពអតិបរមា: 5MB (JPG, PNG)</small>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block">រក្សាទុក</button>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary close-modal">បិទ</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> រក្សាទុក
+                    </button>
+                </div>
             </form>
         </div>
     </div>
 
+    <!-- Order Detail Modal -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>ព័ត៌មានការបញ្ជាទិញ</h2>
+            <div id="orderDetails"></div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
     <div id="toast" class="toast"></div>
 
     <script src="script.js"></script>
 </body>
-</html>
+                            </html>
