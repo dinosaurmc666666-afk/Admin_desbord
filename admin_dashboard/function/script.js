@@ -26,23 +26,18 @@ function initNavigation() {
         link.addEventListener('click', (e) => {
             e.preventDefault();
             const section = link.dataset.section;
-            console.log(' Menu clicked:', section);
+            console.log('🎯 Menu clicked:', section);
             
             switchSection(section);
             
-            // Update active state
             menuLinks.forEach(l => l.classList.remove('active'));
             link.classList.add('active');
             
-            // Close mobile menu
             const sidebar = document.getElementById('sidebar');
-            if (sidebar) {
-                sidebar.classList.remove('mobile-open');
-            }
+            if (sidebar) sidebar.classList.remove('mobile-open');
         });
     });
     
-    // Sidebar toggle button
     const toggleBtn = document.getElementById('toggleSidebar');
     if (toggleBtn) {
         toggleBtn.addEventListener('click', () => {
@@ -57,7 +52,6 @@ function initNavigation() {
         });
     }
     
-    // Close sidebar on outside click (mobile)
     document.addEventListener('click', (e) => {
         const sidebar = document.getElementById('sidebar');
         const menuBtn = document.querySelector('.toggle-sidebar');
@@ -70,18 +64,14 @@ function initNavigation() {
 function switchSection(sectionId) {
     console.log('🔄 Switching to section:', sectionId);
     
-    // Hide all sections
     document.querySelectorAll('.section').forEach(s => {
         s.classList.remove('active');
     });
     
-    // Show target section
     const targetSection = document.getElementById(`section-${sectionId}`);
     if (targetSection) {
         targetSection.classList.add('active');
         console.log('✅ Section shown:', sectionId);
-        
-        // Load section data
         loadSectionData(sectionId);
     } else {
         console.error('❌ Section not found:', sectionId);
@@ -92,30 +82,14 @@ function loadSectionData(sectionId) {
     console.log('📥 Loading data for:', sectionId);
     
     switch(sectionId) {
-        case 'dashboard':
-            loadDashboard();
-            startRealtimeMonitoring();
-            break;
-        case 'products':
-            loadProducts();
-            break;
-        case 'orders':
-            loadOrders();
-            break;
-        case 'users':
-            loadUsers();
-            break;
-        case 'discounts':
-            loadDiscounts();
-            break;
-        case 'stock':
-            loadStock();
-            break;
-        case 'settings':
-            loadSettings();
-            break;
-        default:
-            console.warn('️ Unknown section:', sectionId);
+        case 'dashboard': loadDashboard(); startRealtimeMonitoring(); break;
+        case 'products': loadProducts(); break;
+        case 'orders': loadOrders(); break;
+        case 'users': loadUsers(); break;
+        case 'discounts': loadDiscounts(); break;
+        case 'stock': loadStock(); break;
+        case 'settings': loadSettings(); break;
+        default: console.warn('⚠️ Unknown section:', sectionId);
     }
 }
 
@@ -143,9 +117,7 @@ function initTheme() {
 function setupModalCloseHandlers() {
     document.querySelectorAll('.modal').forEach(m => {
         m.addEventListener('click', (e) => {
-            if (e.target === m) {
-                m.classList.remove('active');
-            }
+            if (e.target === m) m.classList.remove('active');
         });
     });
 }
@@ -153,13 +125,10 @@ function setupModalCloseHandlers() {
 function openProductModal() {
     const title = document.getElementById('productModalTitle');
     if (title) title.innerText = 'បន្ថែមផលិតផលថ្មី';
-    
     const form = document.getElementById('productForm');
     if (form) form.reset();
-    
     const prodId = document.getElementById('prodId');
     if (prodId) prodId.value = '';
-    
     const modal = document.getElementById('productModal');
     if (modal) modal.classList.add('active');
 }
@@ -172,13 +141,10 @@ function closeProductModal() {
 function openDiscountModal() {
     const form = document.getElementById('discountForm');
     if (form) form.reset();
-    
     const discLimitGroup = document.getElementById('discLimitGroup');
     if (discLimitGroup) discLimitGroup.style.display = 'none';
-    
     const discExpiryGroup = document.getElementById('discExpiryGroup');
     if (discExpiryGroup) discExpiryGroup.style.display = 'none';
-    
     const modal = document.getElementById('discountModal');
     if (modal) modal.classList.add('active');
 }
@@ -191,17 +157,13 @@ function closeDiscountModal() {
 function toggleDiscLimit() {
     const type = document.getElementById('discLimitType');
     const group = document.getElementById('discLimitGroup');
-    if (type && group) {
-        group.style.display = type.value === 'fixed' ? 'block' : 'none';
-    }
+    if (type && group) group.style.display = type.value === 'fixed' ? 'block' : 'none';
 }
 
 function toggleDiscExpiry() {
     const type = document.getElementById('discExpiryType');
     const group = document.getElementById('discExpiryGroup');
-    if (type && group) {
-        group.style.display = type.value === 'unlimited' ? 'none' : 'block';
-    }
+    if (type && group) group.style.display = type.value === 'unlimited' ? 'none' : 'block';
 }
 
 function openStockModal(productId, productName, currentStock) {
@@ -323,3 +285,18 @@ function showErrorMessage(msg) {
         alert('Error: ' + msg);
     }
 }
+
+// ============================================
+// ✅ EXPOSE TO GLOBAL SCOPE (សំខាន់!)
+// ============================================
+Object.assign(window, {
+    switchSection,
+    openProductModal, closeProductModal,
+    openDiscountModal, closeDiscountModal, toggleDiscLimit, toggleDiscExpiry,
+    openStockModal, closeStockModal,
+    openBanModal, closeBanModal,
+    closeInventoryModal,
+    handleLogout
+});
+
+console.log('✅ Script functions exposed to window');
