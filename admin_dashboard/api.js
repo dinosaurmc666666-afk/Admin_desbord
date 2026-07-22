@@ -2,18 +2,11 @@
 // API Configuration & Helper Functions
 // ============================================
 
-const API_BASE = 'https://api.anajakcode.site'; // Change this!
-// For local testing: const API_BASE = 'http://localhost:15660';
+// ⚠️ ប្តូរ URL នេះទៅជា Tunnel URL របស់អ្នក
+const API_BASE = 'https://api.anajakcode.site';
+// សម្រាប់ Localhost: const API_BASE = 'http://localhost:15660';
 
 const API = {
-    // ---- AUTH ----
-    login: (email, password) => 
-        fetch(`${API_BASE}/api/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        }).then(r => r.json()),
-
     // ---- PRODUCTS ----
     getProducts: () => 
         fetch(`${API_BASE}/api/products`).then(r => r.json()),
@@ -53,13 +46,6 @@ const API = {
     getOrders: () => 
         fetch(`${API_BASE}/api/admin/orders`).then(r => r.json()),
 
-    updateOrderStatus: (id, status) => 
-        fetch(`${API_BASE}/api/admin/orders/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status })
-        }).then(r => r.json()),
-
     // ---- USERS ----
     getUsers: () => 
         fetch(`${API_BASE}/api/admin/users`).then(r => r.json()),
@@ -81,42 +67,12 @@ const API = {
 
     // ---- STATS ----
     getStats: () => 
-        fetch(`${API_BASE}/api/admin/stats`).then(r => r.json()),
-
-    // ---- DISCOUNTS ----
-    getDiscounts: () => 
-        fetch(`${API_BASE}/api/admin/discounts`).then(r => r.json()),
-
-    addDiscount: (data) => 
-        fetch(`${API_BASE}/api/admin/discounts`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        }).then(r => r.json()),
-
-    deleteDiscount: (id) => 
-        fetch(`${API_BASE}/api/admin/discounts/${id}`, {
-            method: 'DELETE'
-        }).then(r => r.json())
+        fetch(`${API_BASE}/api/admin/stats`).then(r => r.json())
 };
 
-// Auth Guard
-function checkAuth() {
-    const loggedIn = localStorage.getItem('admin_logged_in');
-    if (!loggedIn) {
-        window.location.href = './login/index.html';
-        return false;
-    }
-    return true;
-}
-
+// Logout Function (Simple)
 function logout() {
-    localStorage.removeItem('admin_token');
-    localStorage.removeItem('admin_logged_in');
-    window.location.href = './login/index.html';
-}
-
-function getUserInfo() {
-    const data = localStorage.getItem('admin_token');
-    return data ? JSON.parse(data) : null;
+    if (confirm('តើអ្នកចង់ចាកចេញពី Admin Panel?')) {
+        window.location.href = '/'; // Redirect to home page
+    }
 }
