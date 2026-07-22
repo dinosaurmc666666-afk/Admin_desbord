@@ -1,87 +1,122 @@
 // ============================================
-// API CONFIGURATION
+// API Configuration & Helper Functions
 // ============================================
-const API_URL = 'https://api.anajakcode.site/api';
 
-// ============================================
-// AUTH HELPERS
-// ============================================
-function getToken() { 
-    return localStorage.getItem('admin_token'); 
-}
+const API_BASE = 'https://api.anajakcode.site'; // Change this!
+// For local testing: const API_BASE = 'http://localhost:15660';
 
-function setToken(token) { 
-    localStorage.setItem('admin_token', token); 
-}
+const API = {
+    // ---- AUTH ----
+    login: (email, password) => 
+        fetch(`${API_BASE}/api/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        }).then(r => r.json()),
 
-function clearToken() { 
-    localStorage.removeItem('admin_token'); 
-}
+    // ---- PRODUCTS ----
+    getProducts: () => 
+        fetch(`${API_BASE}/api/products`).then(r => r.json()),
 
-// Check auth on load
-if (!getToken() && !window.location.pathname.includes('login')) {
-    window.location.href = 'login/index.html';
-}
+    getProduct: (id) => 
+        fetch(`${API_BASE}/api/products/${id}`).then(r => r.json()),
 
-// ============================================
-// FETCH WITH AUTH
-// ============================================
-async function fetchWithAuth(url, options = {}) {
-    const token = getToken();
-    
-    console.log(' Token:', token ? '✅ Present' : '❌ Missing');
-    console.log('📡 Fetching:', url);
-    
-    const headers = { 
-        'Content-Type': 'application/json',
-        ...(options.headers || {})
-    };
-    
-    // Add Authorization header if token exists
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+    addProduct: (data) => 
+        fetch(`${API_BASE}/api/admin/products`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).then(r => r.json()),
+
+    updateProduct: (id, data) => 
+        fetch(`${API_BASE}/api/admin/products/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).then(r => r.json()),
+
+    deleteProduct: (id) => 
+        fetch(`${API_BASE}/api/admin/products/${id}`, {
+            method: 'DELETE'
+        }).then(r => r.json()),
+
+    uploadFile: (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        return fetch(`${API_BASE}/api/admin/upload`, {
+            method: 'POST',
+            body: formData
+        }).then(r => r.json());
+    },
+
+    // ---- ORDERS ----
+    getOrders: () => 
+        fetch(`${API_BASE}/api/admin/orders`).then(r => r.json()),
+
+    updateOrderStatus: (id, status) => 
+        fetch(`${API_BASE}/api/admin/orders/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status })
+        }).then(r => r.json()),
+
+    // ---- USERS ----
+    getUsers: () => 
+        fetch(`${API_BASE}/api/admin/users`).then(r => r.json()),
+
+    deleteUser: (id) => 
+        fetch(`${API_BASE}/api/admin/users/${id}`, {
+            method: 'DELETE'
+        }).then(r => r.json()),
+
+    banUser: (id) => 
+        fetch(`${API_BASE}/api/admin/users/${id}/ban`, {
+            method: 'PUT'
+        }).then(r => r.json()),
+
+    unbanUser: (id) => 
+        fetch(`${API_BASE}/api/admin/users/${id}/unban`, {
+            method: 'PUT'
+        }).then(r => r.json()),
+
+    // ---- STATS ----
+    getStats: () => 
+        fetch(`${API_BASE}/api/admin/stats`).then(r => r.json()),
+
+    // ---- DISCOUNTS ----
+    getDiscounts: () => 
+        fetch(`${API_BASE}/api/admin/discounts`).then(r => r.json()),
+
+    addDiscount: (data) => 
+        fetch(`${API_BASE}/api/admin/discounts`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).then(r => r.json()),
+
+    deleteDiscount: (id) => 
+        fetch(`${API_BASE}/api/admin/discounts/${id}`, {
+            method: 'DELETE'
+        }).then(r => r.json())
+};
+
+// Auth Guard
+function checkAuth() {
+    const loggedIn = localStorage.getItem('admin_logged_in');
+    if (!loggedIn) {
+        window.location.href = './login/index.html';
+        return false;
     }
-    
-    try {
-        const response = await fetch(url, { ...options, headers });
-        
-        console.log('📡 Response status:', response.status);
-        
-        if (response.status === 401) {
-            console.error('❌ Unauthorized - Token invalid or missing');
-            clearToken();
-            window.location.href = 'login/index.html';
-            return null;
-        }
-        
-        return response;
-    } catch (error) {
-        console.error('❌ Fetch error:', error);
-        showToast('Connection failed', 'error');
-        return null;
-    }
+    return true;
 }
 
-// ============================================
-// TOAST NOTIFICATIONS
-// ============================================
-function showToast(message, type = 'success') {
-    const container = document.getElementById('toastContainer');
-    if (!container) {
-        alert(message);
-        return;
-    }
-    
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.innerHTML = `
-        <div class="toast-content">
-            <div class="toast-message">${message}</div>
-        </div>
-    `;
-    container.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.remove();
-    }, 3000);
+function logout() {
+    localStorage.removeItem('admin_token');
+    localStorage.removeItem('admin_logged_in');
+    window.location.href = './login/index.html';
+}
+
+function getUserInfo() {
+    const data = localStorage.getItem('admin_token');
+    return data ? JSON.parse(data) : null;
 }
