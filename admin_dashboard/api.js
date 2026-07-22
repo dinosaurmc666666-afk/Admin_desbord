@@ -1,7 +1,7 @@
 // ============================================
 // API CONFIGURATION
 // ============================================
-const API_URL = 'https://api.anajakcode.site/api'; // ️ កែ URL នេះ
+const API_URL = 'https://payment.forestsmp.site/api'; // ️ កែ URL នេះ
 
 // ============================================
 // AUTH HELPERS
