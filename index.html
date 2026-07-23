@@ -1,55 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="km">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Mini App</title>
-    <!-- ដាក់ Script របស់ Telegram WebApp -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        body {
-            font-family: sans-serif;
-            background-color: var(--tg-theme-bg-color, #fff);
-            color: var(--tg-theme-text-color, #000);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: var(--tg-theme-button-color, #3390ec);
-            color: var(--tg-theme-button-text-color, #fff);
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-    </style>
+    <meta http-equiv="refresh" content="0; url=admin_dashboard/">
+    <title>redirect link</title>
 </head>
 <body>
-    <div>
-        <h1>សួស្តី! នេះគឺជា Mini App</h1>
-        <p>ឈ្មោះអ្នកប្រើប្រាស់: <span id="username"></span></p>
-        <button onclick="sendData()">ផ្ញើទិន្នន័យ</button>
-    </div>
-
-    <script>
-        // ចាប់ផ្តើម Telegram WebApp
-        const tg = window.Telegram.WebApp;
-
-        // ពង្រីក App ឱ្យពេញអេក្រង់
-        tg.expand();
-
-        // បង្ហាញឈ្មោះអ្នកប្រើប្រាស់
-        document.getElementById('username').innerText = tg.initDataUnsafe.user?.first_name || "Guest";
-
-        // មុខងារផ្ញើទិន្នន័យត្រឡប់ទៅ Bot
-        function sendData() {
-            tg.sendData("Hello from Mini App!"); 
-            // ឬបិទ App
-            // tg.close();
-        }
-    </script>
+    <p></p>
 </body>
 </html>
