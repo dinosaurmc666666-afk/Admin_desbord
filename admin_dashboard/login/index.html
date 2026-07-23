@@ -3,194 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login</title>
+    <title>Admin Login - AnajakCode</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap');
-        
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --bg-dark: #0f172a;
-            --bg-card: #1e293b;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: #334155;
-            --danger: #ef4444;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-dark);
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .login-container {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 40px;
-            width: 100%;
-            max-width: 450px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-        }
-        
-        .logo {
-            font-family: 'Poppins';
-            font-size: 32px;
-            font-weight: 800;
-            text-align: center;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, var(--primary), #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .subtitle {
-            text-align: center;
-            color: var(--text-muted);
-            margin-bottom: 32px;
-            font-size: 14px;
-        }
-        
-        .form-group {
-            margin-bottom: 24px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--text-main);
-        }
-        
-        .form-group label i {
-            margin-right: 8px;
-            color: var(--primary);
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 14px 16px;
-            background: var(--bg-dark);
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            font-size: 15px;
-            transition: all 0.3s;
-        }
-        
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
-        }
-        
-        .form-control::placeholder {
-            color: var(--text-muted);
-        }
-        
-        .btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, var(--primary), #8b5cf6);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
-        }
-        
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        
-        .error-msg {
-            color: var(--danger);
-            font-size: 13px;
-            margin-top: 16px;
-            text-align: center;
-            display: none;
-            padding: 12px;
-            background: rgba(239, 68, 68, 0.1);
-            border-radius: 8px;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-        
-        .error-msg.show {
-            display: block;
-        }
-        
-        .spinner {
-            width: 18px;
-            height: 18px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        :root { --primary: #6366f1; --bg-dark: #0f172a; --bg-card: #1e293b; --text-main: #f8fafc; --border: #334155; --danger: #ef4444; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color: var(--text-main); display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .login-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 40px; width: 100%; max-width: 450px; box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
+        .logo { font-family: 'Poppins'; font-size: 32px; font-weight: 800; text-align: center; margin-bottom: 8px; background: linear-gradient(135deg, var(--primary), #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { text-align: center; color: #94a3b8; margin-bottom: 32px; font-size: 14px; }
+        .form-group { margin-bottom: 24px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
+        .form-group label i { margin-right: 8px; color: var(--primary); }
+        .form-control { width: 100%; padding: 14px 16px; background: var(--bg-dark); border: 2px solid var(--border); border-radius: 10px; color: var(--text-main); font-size: 15px; transition: all 0.3s; }
+        .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15); }
+        .btn { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary), #8b5cf6); color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .error-msg { color: var(--danger); font-size: 13px; margin-top: 16px; text-align: center; display: none; padding: 12px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.2); }
+        .error-msg.show { display: block; }
+        .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
     <div class="login-container">
-        <div class="logo">AnajakCode</div>
+        <div class="logo">⚡ AnajakCode</div>
         <p class="subtitle">Admin Dashboard Login</p>
-        
         <form id="login-form" onsubmit="handleLogin(event)">
             <div class="form-group">
                 <label for="admin-email"><i class="fas fa-envelope"></i> Email Address</label>
                 <input type="email" id="admin-email" class="form-control" required placeholder="admin@anajakcode.site">
             </div>
-            
             <div class="form-group">
                 <label for="admin-password"><i class="fas fa-lock"></i> Password</label>
                 <input type="password" id="admin-password" class="form-control" required placeholder="Enter your password">
             </div>
-            
             <button type="submit" class="btn" id="login-btn">
                 <span class="btn-text"><i class="fas fa-sign-in-alt"></i> Login to Dashboard</span>
                 <div class="spinner" style="display: none;"></div>
             </button>
-            
             <p class="error-msg" id="error-msg"></p>
         </form>
     </div>
     
+    <script src="../api.js"></script>
     <script>
-        const API_BASE = 'https://api.anajakcode.site';
-        
+        if (localStorage.getItem('admin_logged_in') === 'true') {
+            window.location.href = '../index.html';
+        }
+
         async function handleLogin(e) {
             e.preventDefault();
-            
             const email = document.getElementById('admin-email').value;
             const password = document.getElementById('admin-password').value;
             const errorMsg = document.getElementById('error-msg');
@@ -204,40 +68,18 @@
             errorMsg.classList.remove('show');
             
             try {
-                const response = await fetch(`${API_BASE}/api/admin/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email, password }),
-                    credentials: 'include'
-                });
-                
-                const data = await response.json();
-                
-                if (response.ok) {
-                    sessionStorage.setItem('admin_logged_in', 'true');
-                    sessionStorage.setItem('admin_email', email);
-                    
-                    window.location.href = './';
-                } else {
-                    errorMsg.textContent = data.error || 'Invalid credentials';
-                    errorMsg.classList.add('show');
-                    loginBtn.disabled = false;
-                    spinner.style.display = 'none';
-                    btnText.style.display = 'flex';
-                }
+                await API.adminLogin(email, password);
+                localStorage.setItem('admin_logged_in', 'true');
+                localStorage.setItem('admin_email', email);
+                window.location.href = '../index.html';
             } catch (error) {
-                errorMsg.textContent = 'Connection failed. Please check your internet connection.';
+                console.error('Login error:', error);
+                errorMsg.textContent = error.message || 'Connection failed. Check internet/backend.';
                 errorMsg.classList.add('show');
                 loginBtn.disabled = false;
                 spinner.style.display = 'none';
                 btnText.style.display = 'flex';
             }
-        }
-        
-        if (sessionStorage.getItem('admin_logged_in') === 'true') {
-            window.location.href = './';
         }
     </script>
 </body>
